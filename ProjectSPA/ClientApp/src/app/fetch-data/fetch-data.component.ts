@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { finalize } from "rxjs/operators"
 
 const toCelcius = (temp: number): number => temp - 273.15;
 const toFarenheit = (temp: number): number => 32 + toCelcius(temp) / 0.5556
@@ -13,6 +14,7 @@ export class FetchDataComponent {
   public zipCode: string;
   public loading: boolean;
   private _temperatureType: TemperatureType = TemperatureType.Celcius;
+  public error: string;
 
   setTemperatureType(type: TemperatureType) {
     this._temperatureType = type;
@@ -23,14 +25,19 @@ export class FetchDataComponent {
   }
 
   onRequestClick() {
+    this.error = "";
+    this.forecasts = null;
     this.loading = true;
     this._http.get<WeatherForecast>(this._baseUrl + 'weatherforecast/' + this.zipCode)
+      .pipe(finalize(() => this.loading = false))
       .subscribe(
-        result => {
+        (result: WeatherForecast) => {
           this.forecasts = result;
         },
-        error => console.error(error),
-        () => this.loading = false);
+        error => {
+          this.error =
+            "error loading weather for zipcode " + this.zipCode
+        });
   }
 
   get Temperature() {
