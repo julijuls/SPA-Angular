@@ -27,6 +27,9 @@ namespace ProjectSPA
 
             services.Configure<OpenWeatherConfig>(Configuration.GetSection("OpenWeatherConfig"));
             services.AddScoped<IWeatherService, WeatherService>();
+
+            services.Configure<TimeZoneConfig>(Configuration.GetSection("GoogleConfig"));
+            services.AddScoped<ITimeZoneService, TimeZoneService>();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {

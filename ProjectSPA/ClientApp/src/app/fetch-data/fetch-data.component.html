@@ -1,24 +1,27 @@
 <h1 id="tableLabel">Weather forecast</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
 
-<p *ngIf="!forecasts"><em>Loading...</em></p>
+<input (input)="onCodeInput($event.target.value)" />
+<button (click)="onRequestClick()">Search</button>
 
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="forecasts">
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Temp. (C)</th>
-      <th>Temp. (F)</th>
-      <th>Summary</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let forecast of forecasts">
-      <td>{{ forecast.date }}</td>
-      <td>{{ forecast.temperatureC }}</td>
-      <td>{{ forecast.temperatureF }}</td>
-      <td>{{ forecast.summary }}</td>
-    </tr>
-  </tbody>
-</table>
+
+
+<p *ngIf="!forecasts; else weatherTemplate"><em>Please, search by ZIP code</em></p>
+
+<p *ngIf="loading">Loading...</p>
+
+<ng-template #weatherTemplate>
+  <h2>{{forecasts.cityName}}</h2>
+  <img [src]="'http://openweathermap.org/img/w/' + forecasts.icon + '.png'" style="float: left;" />
+  <p>
+    Timezone: {{forecasts.timezone}}<br />
+    Temperature: {{Temperature}}<br />
+  </p>
+  <ul>
+    <li (click)="setTemperatureType(1)">K</li>
+    <li (click)="setTemperatureType(2)">C</li>
+    <li (click)="setTemperatureType(3)">F</li>
+  </ul>
+
+</ng-template>
+

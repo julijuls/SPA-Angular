@@ -8,7 +8,8 @@ namespace ProjectSPA
     public class WeatherView
     {
         public string CityName { get; set; }
-        public double Temperature { get; set; }
-        public string TimeZone { get; set; }
+        public double Temp { get; set; }
+        public string Timezone { get; set; }
+        public string Icon { get; set; }
     }
 }

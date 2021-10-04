@@ -1,5 +1,4 @@
 ﻿using ProjectSPA.Models;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace ProjectSPA.Interfaces
 {
-    public interface IWeatherService
+    public interface ITimeZoneService
     {
-
-        Task<WeatherInfo> GetWeather(int zip);
-
+        Task<string> GetTimeZone(WeatherInfo weather);
     }
 }
