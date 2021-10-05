@@ -1,9 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { finalize } from "rxjs/operators"
+import { TemperatureType, WeatherForecast, WeatherHistory } from '../../types/weather-forecast';
 
-const toCelcius = (temp: number): number => temp - 273.15;
-const toFarenheit = (temp: number): number => 32 + toCelcius(temp) / 0.5556
+
 
 @Component({
   selector: 'app-fetch-data',
@@ -13,11 +13,12 @@ export class FetchDataComponent {
   public forecasts: WeatherForecast | null = null;
   public zipCode: string;
   public loading: boolean;
-  private _temperatureType: TemperatureType = TemperatureType.Celcius;
+  public temperatureType: TemperatureType = TemperatureType.Celcius;
   public error: string;
+  public history: WeatherHistory[] | null = null;
 
   setTemperatureType(type: TemperatureType) {
-    this._temperatureType = type;
+    this.temperatureType = type;
   }
 
   onCodeInput(value) {
@@ -40,18 +41,24 @@ export class FetchDataComponent {
         });
   }
 
-  get Temperature() {
-    switch (this._temperatureType) {
-      case TemperatureType.Kelvin:
-        return this.forecasts.temp + ' K';
-      case TemperatureType.Celcius:
-        return toCelcius(this.forecasts.temp).toPrecision(2) + ' C'
-      case TemperatureType.Farengheit:
-        return toFarenheit(this.forecasts.temp).toPrecision(2) + ' F'
-      default:
-        throw new Error("Unkwown temperature type");
-    }
+  onHistoryClick() {
+    this.error = "";
+    this.history = null;
+
+    this.loading = true;
+    this._http.get<WeatherHistory[]>(this._baseUrl + 'weatherforecast/history')
+      .pipe(finalize(() => this.loading = false))
+      .subscribe(
+        (result: WeatherHistory[]) => {
+          this.history = result;
+        },
+        error => {
+          this.error =
+            "error loading history"
+        });
+
   }
+
 
   constructor(private readonly _http: HttpClient, @Inject('BASE_URL') private readonly _baseUrl: string) {
     //http.get<WeatherForecast>(baseUrl + 'weatherforecast/94040').subscribe(result => {
@@ -60,15 +67,3 @@ export class FetchDataComponent {
   }
 }
 
-enum TemperatureType {
-  Kelvin = 1,
-  Celcius = 2,
-  Farengheit = 3
-}
-
-interface WeatherForecast {
-  cityName: string;
-  temp: number;
-  timezone: string;
-  icon: string;
-}

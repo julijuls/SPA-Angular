@@ -3,7 +3,7 @@
 <div class="card">
   <h1 id="tableLabel">Weather forecast</h1>
   <div class="search">
-    <input (input)="onCodeInput($event.target.value)" placeholder="Search by ZIP code"/>
+    <input (input)="onCodeInput($event.target.value)" placeholder="Search by ZIP code" />
     <button (click)="onRequestClick()">
       <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1.5em"
            width="1.5em" xmlns="http://www.w3.org/2000/svg">
@@ -11,28 +11,35 @@
         </path>
       </svg>
     </button>
-
+    <ul>
+      <li (click)="setTemperatureType(1)">K</li>
+      <li (click)="setTemperatureType(2)">C</li>
+      <li (click)="setTemperatureType(3)">F</li>
+    </ul>
   </div>
   <div class="weather">
-   
-    <p *ngIf="loading">Loading...</p>
-    <p *ngIf="error">{{error}}</p>
+
+    <span *ngIf="loading">Loading...</span>
+    <span *ngIf="error">{{error}}</span>
     <div *ngIf="forecasts">
-      <h2 class="city">{{forecasts.cityName}}</h2>
-      <img [src]="'http://openweathermap.org/img/w/' + forecasts.icon + '.png'" class="icon" />
-      <p>
-        Timezone: {{forecasts.timezone}}<br />
-        Temperature: {{Temperature}}<br />
-      </p>
-      <ul>
-        <li (click)="setTemperatureType(1)">K</li>
-        <li (click)="setTemperatureType(2)">C</li>
-        <li (click)="setTemperatureType(3)">F</li>
-      </ul>
+      <base-weather-info [forecastInfo]="forecasts" [temperatureType]="temperatureType"></base-weather-info>
+
     </div>
+
   </div>
+
 </div>
 
 
 
+<div class="history-container">
+  <button class="history-button" (click)="onHistoryClick()">History</button>
 
+  <div *ngIf="history?.length" class="history-list">
+    <div *ngFor="let his of history" class="history-element">
+      <label>{{his.datetimeRequest | date:'yyyy-MM-dd HH:mm:ss'}}</label>
+      <base-weather-info [forecastInfo]="his" [temperatureType]="temperatureType"></base-weather-info>
+    </div>
+
+  </div>
+</div>

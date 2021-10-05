@@ -11,14 +11,14 @@ using System.Globalization;
 
 namespace ProjectSPA.Services
 {
-    public class TimeZoneService : ITimeZoneService
+    public class GoogleClientService : IGoogleClientService
     {
         private readonly TimeZoneConfig _timeZoneConfig;
         private readonly RestClient _timeZonerRestClient;
 
         private const string GOOGLE_TIMEZONE_REQUEST = "/timezone/json";
 
-        public TimeZoneService(IOptions<TimeZoneConfig> openWeatherConfig)
+        public GoogleClientService(IOptions<TimeZoneConfig> openWeatherConfig)
         {
             _timeZoneConfig = openWeatherConfig?.Value ?? throw new ArgumentNullException(nameof(OpenWeatherConfig));
             _timeZonerRestClient = new RestClient(_timeZoneConfig.BaseUrl);

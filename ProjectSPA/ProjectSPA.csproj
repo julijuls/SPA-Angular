@@ -14,6 +14,16 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.19" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="RestSharp" Version="106.12.0" />
   </ItemGroup>
 
@@ -22,6 +32,14 @@
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\types\weather-forecast.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\types\weather-forecast.ts" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -1,35 +1,65 @@
-﻿using Microsoft.Extensions.Options;
-using ProjectSPA.AppConfigs;
+﻿using Microsoft.EntityFrameworkCore;
+using ProjectSPA.DAL;
+using ProjectSPA.DAL.Models;
 using ProjectSPA.Interfaces;
 using ProjectSPA.Models;
-using RestSharp;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProjectSPA.Services
 {
     public class WeatherService : IWeatherService
     {
-        private readonly OpenWeatherConfig _openWeatherConfig;
-        private readonly RestClient _weatherRestClient;
-
-        public WeatherService(IOptions<OpenWeatherConfig> openWeatherConfig)
+        private readonly IWeatherClientService _weatherClientService;
+        private readonly IGoogleClientService _googleClientService;
+        private readonly ApplicationContext _db;
+        public WeatherService(ApplicationContext db, IWeatherClientService weatherClientService, IGoogleClientService googleClientService)
         {
-            _openWeatherConfig = openWeatherConfig?.Value ?? throw new ArgumentNullException(nameof(OpenWeatherConfig));
-            _weatherRestClient = new RestClient(_openWeatherConfig.BaseUrl);
-            _weatherRestClient.AddDefaultHeader("x-rapidapi-key", _openWeatherConfig.PrivateKey);
+            _weatherClientService = weatherClientService;
+            _googleClientService = googleClientService;
+            _db = db;
         }
-
-        public async Task<WeatherInfo> GetWeather(int zip)
+        public async Task<WeatherModel> GetWeather(int zip)
         {
-            
-            var request = new RestRequest(Method.GET);
-            request.AddParameter("zip", zip, ParameterType.GetOrPost);
-            var response = await _weatherRestClient.ExecuteAsync<WeatherInfo>(request);
-            return response.Data;
-            // then outputs city name, current temperature and time zone.
-        }
 
+            var model = await _weatherClientService.GetWeatherInfo(zip);
+            var timeZone = await _googleClientService.GetTimeZone(model);
+            var weatherView = new WeatherModel
+            {
+                Temp = model.Main.Temp,
+                CityName = model.Name,
+                Timezone = timeZone,
+                Icon = model.Weather.Select(x => x.Icon).FirstOrDefault()
+
+            };
+
+            DateTime utcDate = DateTime.UtcNow;
+            var weatherHistory = new WeatherHistory
+            {
+                Temp = model.Main.Temp,
+                CityName = model.Name,
+                Timezone = timeZone,
+                Icon = model.Weather.Select(x => x.Icon).FirstOrDefault(),
+                DatetimeRequest = utcDate
+            };
+            _db.WeatherHistory.Add(weatherHistory);
+            await _db.SaveChangesAsync();
+            return weatherView;
+        }
+        public async Task<IEnumerable<WeatherHistoryModel>> GetHistory()
+            => await _db.WeatherHistory
+                .Select(item => new WeatherHistoryModel
+                {
+                    DatetimeRequest = item.DatetimeRequest,
+                    Id = item.Id,
+                    CityName = item.CityName,
+                    Temp = item.Temp,
+                    Timezone = item.Timezone,
+                    Icon = item.Icon
+
+                }).OrderByDescending(item=>item.DatetimeRequest).ToListAsync();
 
     }
 }

@@ -6,11 +6,13 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { BaseWeatherInfoComponent } from './fetch-data/weather-info/base-weather-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    BaseWeatherInfoComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

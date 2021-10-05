@@ -1,5 +1,6 @@
-﻿using ProjectSPA.Models;
-using RestSharp;
+﻿
+using ProjectSPA.DAL.Models;
+using ProjectSPA.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,7 @@ namespace ProjectSPA.Interfaces
 {
     public interface IWeatherService
     {
-
-        Task<WeatherInfo> GetWeather(int zip);
-
+        Task<WeatherModel> GetWeather(int zip);
+        Task<IEnumerable<WeatherHistoryModel>> GetHistory();
     }
 }
